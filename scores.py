@@ -51,10 +51,9 @@ class ScoreCalculator:
         Compute the popularity score of a term in a corpus.
         '''
         term_count = self.term_freqs[topic_index][term]
+        total_tokens = self.pseudo_documents_lengths[topic_index]
         if term_count == 0:
             return 0.0
-        total_tokens = self.pseudo_documents_lengths[topic_index]
-        
         return math.log(term_count + 1) / math.log(total_tokens)    
         
     
@@ -66,10 +65,9 @@ class ScoreCalculator:
         total_doc_count: total number of pseudo-documents
         doc_present_count: number of pseudo-documents containing the term
         avgdl: average pseudo-document length
-        '''
+        ''' 
         if tf == 0:
             return 0.0
-        
         score = tf * (k + 1) / (tf + k * (1 - b + b * (dl / avgdl)))
         idf = math.log((total_doc_count - doc_present_count + 0.5) / (doc_present_count + 0.5) + 1)
         return score * idf

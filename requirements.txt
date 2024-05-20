@@ -2,3 +2,6 @@ anytree==2.12.1
 gensim==4.3.2
 numpy==1.26.4
 scikit_learn==1.4.2
+
+#for testing
+treelib==1.7.0

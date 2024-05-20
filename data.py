@@ -19,4 +19,5 @@ class Topic:
         if self.scores:
             return sorted(self.scores, key=self.scores.get, reverse=True)[:n]
         else:
-            raise ValueError('Scores have not been calculated yet or it is root topic')
+            #raise ValueError('Scores have not been calculated yet or it is root topic')
+            return ['None']*n
