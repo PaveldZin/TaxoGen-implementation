@@ -1,7 +1,7 @@
 from taxonomy import TaxonomyNode
 from clustering import adaptive_clustering
 from doc_embeddings import compute_doc_embeddings, expand_local_docs
-from embedding import skipgram_embedding
+from embedding import fasttext_embedding
 from tf_idf_vectorizer import tfidf_vectorizer
 from data import Topic
 from tqdm import tqdm
@@ -44,7 +44,7 @@ def recursion(node, corpus, level, non_zero_elements, term_to_index, k, n_expand
         doc_embeddings = compute_doc_embeddings(corpus, node.data, non_zero_elements, term_to_index)
         for i in tqdm(range(k), disable=not verbose, desc='\tcreating local embeddings'):
             child_topics[i] = expand_local_docs(child_topics[i], doc_embeddings, n_expand)
-            child_topics[i].embeddings = skipgram_embedding(child_topics[i].terms,
+            child_topics[i].embeddings = fasttext_embedding(child_topics[i].terms,
                                                             [corpus[j] for j in child_topics[i].doc_ids], n_jobs=n_jobs)
 
     
@@ -52,7 +52,7 @@ def recursion(node, corpus, level, non_zero_elements, term_to_index, k, n_expand
     
     for i in range(k):
         recursion(node.children[i], corpus, level + 1, non_zero_elements, term_to_index, k, n_expand, delta, max_iter,
-                  verbose, root=False)
+                  n_jobs, verbose, root=False)
 
 def build_taxonomy(documents, terms, k=5, n_expand=100, delta=0.25,
                    max_iter=1, n_jobs=1, verbose=False):
@@ -75,7 +75,7 @@ def build_taxonomy(documents, terms, k=5, n_expand=100, delta=0.25,
     root_topic = Topic(terms=terms, doc_ids=[range(len(documents))])
     if verbose:
         print('computing root embeddings...')
-    root_topic.embeddings = skipgram_embedding(terms, documents, n_jobs=n_jobs)
+    root_topic.embeddings = fasttext_embedding(terms, documents, n_jobs=n_jobs)
     root = TaxonomyNode(name='root', data=root_topic)
     recursion(root, documents, 1, non_zero_elements, term_to_index, k, n_expand, delta, max_iter, n_jobs, verbose)
     return root
